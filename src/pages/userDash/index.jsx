@@ -1,14 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Logo from '../../components/logo'
+import ModalAddTech from '../../components/ModalAddTech'
+import TechList from '../../components/Techlist'
 import { StyledContainer } from '../../styles/container'
-import { StyledNavBar, StyledUserHeader, StyledUserMain } from './userdash'
+import { StyledNavBar, StyledUserHeader, StyledUserMain, StyledUserMainHeader } from './userdash'
 
-const Userdash = ({logoutFunction, validateUser}) => {
-  const user = JSON.parse(localStorage.getItem('@USERID'))
-  
- 
+const Userdash = ({logoutFunction}) => {
+  const {addTech, setAddTech} = useState(null)
+  const userLoged = JSON.parse(localStorage.getItem('@USERID'))
+
   return (
     <StyledContainer>
+      {addTech && (
+        <ModalAddTech setAddTech={setAddTech}/>
+      )}
       <StyledNavBar>
         <div>
         <Logo/>
@@ -19,18 +24,23 @@ const Userdash = ({logoutFunction, validateUser}) => {
     
       <StyledUserHeader>
         <div>
-          <h2>Ola, {user.name}</h2>
-          <p>{user.course_module}</p>
+          <h2>Ola, {userLoged.name}</h2>
+          <p>{userLoged.course_module}</p>
         </div>
         
       </StyledUserHeader>
 
       <StyledUserMain>
-        <div>
-        <h2>Que pena! estamos em desenvolvimento :(</h2>
-        <p>Nossa aplicação está em desenvolvimento, em breve teremos novidades</p>
-        </div>
-       
+        <StyledUserMainHeader>
+          <h2>technologias</h2>
+          <button onClick={()=>{setAddTech(true)}}>+</button>
+        </StyledUserMainHeader>
+      {userLoged.techs.length===0?
+      (<span>
+        <h2>Você ainda não tem Techs cadastradas</h2>
+      </span>):(<TechList/>)}
+        
+             
       </StyledUserMain>
 
     </StyledContainer>

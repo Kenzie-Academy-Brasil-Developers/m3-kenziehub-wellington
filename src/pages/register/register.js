@@ -72,6 +72,8 @@ export const StyledRegister = styled.div`
         border: none;
         border-radius: 0.25rem;
         padding-left: 1rem;
+        color: #F8F9FA;
+        font-weight: 600;
     }
 
     form>select{

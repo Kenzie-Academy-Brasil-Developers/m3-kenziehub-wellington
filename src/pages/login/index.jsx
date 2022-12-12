@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import Logo from '../../components/logo'
@@ -6,45 +6,14 @@ import { StyledContainer } from '../../styles/container'
 import { StyledLogin, StyledLoginHeader } from './login'
 import { loginSchema } from './loginSchema'
 import { yupResolver } from  '@hookform/resolvers/yup'
-import { api } from '../../api/api'
-import { toast, ToastContainer } from "react-toastify"
+import { ToastContainer } from "react-toastify"
+import { UserContext} from '../../context/UserContext'
+import "react-toastify/dist/ReactToastify.css"
 
 
-const Login = ({navigate}) => {
-  const [loading, setLoading] = useState(false)
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-   resolver: yupResolver(loginSchema)
-  });
-
-  const userLogin= async (formData)=>{
-    try {
-      console.log(formData)
-      setLoading(true)
-      const response = await api.post('/sessions', formData)
-      localStorage.setItem('@TOKEN', JSON.stringify(response.data.token))
-      localStorage.setItem('@USERID', JSON.stringify(response.data.user))
-      toast.success('login realizado!')
-      setTimeout(() => {
-        navigate('/userDash')
-      }, 4000);
-      
-      
-    } catch (error) {
-      console.log(error)
-      toast.error(error.message)
-    } finally {
-      setLoading(false)
-    }
-    
-  }
-
-  const loginSubmit = (data) => {
-    userLogin(data);
-  };
+const Login = () => {
+  const { register, handleSubmit, formState: { errors }} = useForm({resolver: yupResolver(loginSchema)});
+  const {userLogin, loading} = useContext(UserContext)
 
   return (
     <StyledContainer>
@@ -53,30 +22,16 @@ const Login = ({navigate}) => {
       </StyledLoginHeader>
       <StyledLogin>
         <h2>Login</h2>
-        <form onSubmit={handleSubmit(loginSubmit)}>
+        <form onSubmit={handleSubmit(userLogin)}>
           <label htmlFor='email'>Email</label>
-          <input
-            type='text'
-            id='email'
-            label='email:'
-            placeholder='Digite o seu Email'
-            {...register('email')}
-            disabled={loading}
-          />
+          <input type='text' id='email' label='email:' placeholder='Digite o seu Email' {...register('email')} disabled={loading} />
           {errors.email && <p>{errors.email.message}</p>}
           
           <label htmlFor='senha'>Senha</label>
-          <input
-            type='password'
-            id='password'
-            label='password:'
-            placeholder='Digite sua senha'
-            {...register('password')}
-            disabled={loading}
-          />
+          <input type='password' id='password' label='password:' placeholder='Digite sua senha' {...register('password')} disabled={loading} />
           {errors.password && <p>{errors.password.message}</p>}
 
-          <button type='submit' disabled={loading} >
+          <button type='submit' disabled={loading}>
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
